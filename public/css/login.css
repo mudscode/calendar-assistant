@@ -23,14 +23,14 @@ body {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  background-color: #4285f4; /* Google blue */
+  background-color: black; /* Google blue */
   color: #ffffff; /* White text */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Drop shadow effect */
   transition: background-color 0.3s ease;
 }
 
 .google button:hover {
-  background-color: #3367d6; /* Darker blue on hover */
+  background-color: rgb(42, 43, 44); /* Darker blue on hover */
 }
 
 /* Media query for responsiveness */

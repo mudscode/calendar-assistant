@@ -41,8 +41,8 @@ app.use("/auth", authRoutes);
 app.use(otherRoutes);
 
 app.use((err, req, res, next) => {
-  console.error(err.stack); // Log the error stack trace to the console
-  res.status(500).send("Internal Server Error"); // Send a generic error response to the client
+  console.error(err.stack);
+  res.status(500).send("Internal Server Error");
 });
 
 const port = process.env.PORT || 3000;

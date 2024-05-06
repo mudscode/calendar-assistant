@@ -16,7 +16,9 @@ passport.use(
     },
     (req, accessToken, refreshToken, profile, done) => {
       console.log("Google Strategy callback invoked");
-      console.log(profile);
+      console.log(profile.displayName);
+      console.log(accessToken);
+      console.log(refreshToken);
       return done(null, profile);
     }
   )
@@ -34,6 +36,5 @@ passport.deserializeUser((id, done) => {
   done(null, user);
 });
 
-console.log("Google Strategy configured");
 
 module.exports = passport;
