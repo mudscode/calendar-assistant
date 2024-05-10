@@ -15,10 +15,10 @@ passport.use(
       passReqToCallback: true,
     },
     (req, accessToken, refreshToken, profile, done) => {
-      console.log("Google Strategy callback invoked");
-      console.log(profile.displayName);
-      console.log(accessToken);
-      console.log(refreshToken);
+      // console.log("Google Strategy callback invoked");
+      // console.log(`Hello ${profile.displayName}`);
+      // console.log(accessToken);
+      // console.log(refreshToken);
       return done(null, profile);
     }
   )

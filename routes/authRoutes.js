@@ -10,9 +10,12 @@ router.get(
   })
 );
 
-router.get('/google/callback', passport.authenticate('google', {
-  successRedirect: '/',
-  failureRedirect: '/login'
-}));
+router.get(
+  "/google/callback",
+  passport.authenticate("google", {
+    successRedirect: "/",
+    failureRedirect: "/login",
+  })
+);
 
 module.exports = router;
