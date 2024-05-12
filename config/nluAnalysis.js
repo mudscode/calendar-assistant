@@ -7,55 +7,65 @@ const openai = new OpenAi({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const userCommandToAnalyze = async (text) =>  {
-  let context = `Analyse the text and provide details in a format suitable for the Google Calendar API. Specify whether it's creating, deleting, or updating an event. Then, convert those details to a valid JSON object in this specific format:
-    {
-      "summary": "Meeting with John",
-      "location": "Conference Room A",
-      "description": "Discuss project milestones",
-      "start": {
-        "dateTime": "2024-05-10T10:00:00",
-        "timeZone": "Pakistan/Islamabad"
-      },
-      "end": {
-        "dateTime": "2024-05-10T11:00:00",
-        "timeZone": "Pakistan/Islamabad"
-      },
-      "attendees": [
-        {"email": "john.doe@example.com"},
-        {"email": "jane.doe@example.com"}
-      ],
-      "reminders": {
-        "useDefault": true
-      },
-      "operation": "delete/create/update"
-    }
-    .
-     Stay consistent with your responses. Don't show the special chars like /n, + or others in the json object. Leave the values null if they are not specified in the text.`;
+const userCommandToAnalyze = async (text) => {
+  let context = `Analyze the text to generate just the json details suitable for the Google Calendar API with no extra text. Timezone is Pakistan/Karachi. Specify whether it's creating or deleting an event and convert the details to a JSON object with the following structure and stay consistent:
+  eventDetails = 
+  {
+    "summary": "Meeting with John",
+    "location": "Conference Room A",
+    "description": "Discuss project milestones",
+    "start": {
+      "dateTime": "2024-05-10T10:00:00",  // Updated Time (The given is just an example)
+      "timeZone": "Pakistan/Karachi"
+    },
+    "end": {
+      "dateTime": "2024-05-10T11:00:00",  // Updated Time (The given is just an example)
+      "timeZone": "Pakistan/Karachi"
+    },
+    "attendees": [
+      {"email": "john.doe@example.com"}
+    ],
+    "reminders": {
+      "useDefault": true
+    },
+  }
+    operation = { "operation": "delete/create"};
+    Just this, don't return anything extra.`;
   try {
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4-turbo",
       messages: [
         {
           role: "system",
-          content: "You analyse text for NLU and send that back in json.",
+          content: context,
         },
-        // { role: "user", content: "Set up a meeting for 10 O' clock today."},
         {
           role: "user",
-          content: text + " " + context,
+          content: text,
         },
       ],
-      // "type": "json-object",
     });
 
-    const response = completion.choices[0].message;
-    return response;
+    const response = completion.choices[0].message.content;
+
+    const startIndex = response.indexOf("{");
+    const endIndex = response.lastIndexOf("}");
+    const jsonResponse = response.substring(startIndex, endIndex + 1);
+
+    // console.log(jsonResponse);
+
+    let parsedResponse;
+    try {
+      parsedResponse = JSON.parse(jsonResponse);
+    } catch (error) {
+      console.error("Error parsing JSON response.");
+      throw new Error("Invalid JSON response response from OpenAI");
+    }
+    return parsedResponse;
   } catch (error) {
     console.log("Error:", error);
+    throw new Error("Failed to analyze user command.");
   }
-}
-
-// chat();
+};
 
 module.exports = { userCommandToAnalyze };

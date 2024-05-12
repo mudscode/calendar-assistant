@@ -13,7 +13,7 @@ const firstClick = async () => {
       window.SpeechRecognition || window.webkitSpeechRecognition;
     recognition = new SpeechRecognition();
 
-    // recognition.lang = "ur-PK"
+    // recognition.lang = "ur-PK";
     recognition.lang = "en-US";
 
     recognition.continuous = true;
@@ -38,37 +38,30 @@ const firstClick = async () => {
     console.log(error);
   }
 };
-// const secondClick = () => {
-//   if (recognition) {
-//     recognition.stop();
-//   }
-// };
 
 btn.addEventListener("click", firstClick);
 
-proceedBtn.addEventListener("click", () => {
+proceedBtn.addEventListener("click", async () => {
   const text = transcript.innerText.trim();
 
   if (text) {
-    fetch("http://localhost:8080/analyse-text", {
-      method: "POST",
-      body: JSON.stringify({ text }),
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.text();
-        } else {
-          throw new Error("Requrest unsuccessful: ", response.status);
-        }
-      })
-      .then((data) => {
+    try {
+      const response = await fetch("http://localhost:8080/analyse-text", {
+        method: "POST",
+        body: JSON.stringify({ text }),
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (response.ok) {
+        const data = await response.text();
         console.log("Response: ", data);
         console.log("Data sent successfully.");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      } else {
+        throw new Error("Request unsuccessful: ", response.status);
+      }
+    } catch (error) {
+      console.error(error);
+    }
 
     transdiv.style.display = "none";
     transcript.innerHTML = "";

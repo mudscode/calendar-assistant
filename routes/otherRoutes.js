@@ -2,6 +2,7 @@
 
 const router = require("express").Router();
 const { userCommandToAnalyze } = require("../config/nluAnalysis");
+const { createEvent } = require("../config/googleCalendar");
 
 const isAuthenticated = (req, res, next) => {
   if (req.isAuthenticated()) {
@@ -13,17 +14,27 @@ const isAuthenticated = (req, res, next) => {
 router.post("/analyse-text", isAuthenticated, async (req, res) => {
   console.log("Received POST request at /analyse-text");
 
+  const accessToken = req.user.accessToken;
+  console.log(accessToken);
+
   try {
     const { text } = req.body;
-
-    console.log(text);
 
     const analyzedText = await userCommandToAnalyze(text);
     console.log(analyzedText);
 
-    res.status(200).send("Recieved the text data.");
+    const eventDetails = analyzedText.eventDetails;
+    const operation = analyzedText.operation;
+
+    if (operation === "create") {
+      await createEvent(accessToken, eventDetails, res);
+    } else if (operation === "delete") {
+    }
+
+    // res.status(200).send("Recieved the text data.");
   } catch (error) {
     console.log(error);
+    res.status(500).send("Error processing the request");
   }
 });
 

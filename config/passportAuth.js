@@ -15,24 +15,26 @@ passport.use(
       passReqToCallback: true,
     },
     (req, accessToken, refreshToken, profile, done) => {
+
+      const user = {
+        id: profile.id,
+        accessToken: accessToken,
+        profile: profile,
+      }
       // console.log("Google Strategy callback invoked");
       // console.log(`Hello ${profile.displayName}`);
       // console.log(accessToken);
       // console.log(refreshToken);
-      return done(null, profile);
+      return done(null, user);
     }
   )
 );
 
 passport.serializeUser((user, done) => {
-  done(null, user.id);
+  done(null, user);
 });
 
-passport.deserializeUser((id, done) => {
-  const user = {
-    id: id,
-  };
-
+passport.deserializeUser((user, done) => {
   done(null, user);
 });
 
